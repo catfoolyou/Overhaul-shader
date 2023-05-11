@@ -1,0 +1,44 @@
+if(worldTime >= 12786 && worldTime < 23961){
+		return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Night
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
+	if(worldTime >= 2000 && worldTime < 12000){
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+		else{
+			return mix(mix(sky, skyColor, 1.0), mix(fog, fogColor, 1.0), fogify(max(upDot, 0.0), 0.25)); // Day
+		}
+	}
+	if(worldTime >= 12000 && worldTime < 12542){
+		return mix(mix(sky, skyColor, 0.1), mix(fog, fogColor, 0.1), fogify(max(upDot, 0.0), 0.25)); // Early evening
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
+	if(worldTime >= 12542 && worldTime < 12786){
+		return mix(mix(sky, skyColor, 0.1), mix(fog, fogColor, 0.1), fogify(max(upDot, 0.0), 0.25)); // Late evening
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
+	if(worldTime >= 167 && worldTime < 2000){
+		return mix(mix(sky, skyColor, 0.1), mix(fog, fogColor, 0.1), fogify(max(upDot, 0.0), 0.25)); // Late morning
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
+	if(worldTime >= 23961 && worldTime < 24000){
+		return mix(mix(sky, skyColor, 0.1), mix(fog, fogColor, 0.1), fogify(max(upDot, 0.0), 0.25)); // Early morning 1
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
+	if(worldTime >= 0 && worldTime < 167){
+		return mix(mix(sky, skyColor, 0.1), mix(fog, fogColor, 0.1), fogify(max(upDot, 0.0), 0.25)); // Early morning 2
+		if(rainStrength > 0){
+			return mix(mix(sky, skyColor, eyeBrightness.y / 200.0), mix(fog, fogColor, eyeBrightness.y / 200.0), fogify(max(upDot, 0.0), 0.25)); // Rain
+		}
+	}
