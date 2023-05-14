@@ -4,7 +4,6 @@
 #define WavingWaterStrength 0.04 //[0.02 0.04 0.06 0.08 1.0]
 #define WavingWaterSize 1.2 //[0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0]
 #define WavingWaterSpeed 1.2 //[0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0]
-#define NotOverfarfix_Reflect
 #define ReflectionQuality 1.0 //[0.04 0.08 0.1 0.2 0.3 0.4 0.5 0.6 0.8 1.0]
 #define ReflectionDistance 160 //[20 30 40 50 60 80 120 160 200 400 800 1600 3200]
 #define ReflectionCoefficient 1.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
@@ -99,9 +98,7 @@ vec3 drawSkyFakeSun(vec3 positionInViewCoord) {
     return drawSun + drawMoon;   
 }
 
-// 3D SSR
 vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
-    vec3 direction_ = direction;
     const float stepBase = ReflectionQuality;
     vec3 testPoint = startPoint;
     direction *= stepBase * 0.8;
@@ -109,7 +106,7 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
     int step = ReflectionDistance;
     for(int i = 0; i < step; i++)
     {
-        testPoint += direction * (1 + float(i) * 0.08);
+        testPoint += direction * (direction.y + float(i) * 0.05);
         vec2 uv = getScreenCoordByViewCoord(testPoint);
         if(uv.x<0 || uv.x>1 ||
           uv.y<0 || uv.y>1) {
@@ -123,27 +120,17 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
         sampleDepth = linearizeDepth(sampleDepth);
         float testDepth = getLinearDepthOfViewCoord(testPoint);
         
-        #ifndef NotOverfarfix_Reflect
-        if( (sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) || i == step-1 )
-        #else
-        if( (sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) )
-        #endif
-        
+        if((sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) || i == step - 1.0)
         {
             hitColor = texture2DLod(colortex0, uv, 0.0).rgb;
             return hitColor.rgb;
         }
     }
     
-    hitColor = drawSkyFakeReflect(direction_) + drawSkyFakeSun(direction_);
+    hitColor = drawSkyFakeReflect(direction) + drawSkyFakeSun(direction);
     return hitColor.rgb;
 }
 
-/*
- *  @function getWave           : Drawing Water Surface Texture
- *  @param positionInWorldCoord : World Coordinates (absolute coordinates)
- *  @return                     : Texture Brightness Coefficient
- */
 float getWave(vec4 positionInWorldCoord) {
 	float Size = 2.2 - WavingWaterSize;
 	float Speed = 2.2 - WavingWaterSpeed;

@@ -5,12 +5,15 @@ option.WavingWater=Waving Water
 option.WavingWaterStrength=Wave Strength
 option.WavingWaterSize=Wave Size
 option.WavingWaterSpeed=Wave Speed
-option.NotOverfarfix_Reflect=Alternate Reflections
 option.ReflectionQuality=Reflection Quality
 option.ReflectionDistance=Reflection Distance
 option.ReflectionCoefficient=Reflection Coefficient
+option.WAVY=Waving Plants
 
 option.shadowMapResolution=Shadowmap Resolution
 option.shadowDistance=Shadow Distance
+
+option.ambientOcclusionLevel=Hardware AO
+option.shadowDistanceRenderMul=Optimize shadows
 
 

@@ -30,32 +30,35 @@ vec3 calcSkyColor(vec3 pos) {
 
 	float mixStrength = 0.1;
 	if(worldTime >= 12786 && worldTime < 23961){
-        	mixStrength = 0.0; // Night
-    	}
+        mixStrength = 0.0; // Night
+    }
    	if(worldTime >= 2000 && worldTime < 12000){
-        	mixStrength = 1.0; // Day
-    	}
-    	if(worldTime >= 12000 && worldTime < 12542){
-        	mixStrength = (((12000 - worldTime) * 0.65f) / 542) + 1.0f; // Early evening
-    	}
-    	if(worldTime >= 12542 && worldTime < 12786){
-        	mixStrength = (((12542 - worldTime) * 0.35f) / 244) + 0.35f; // Late evening
-    	}
-    	if(worldTime >= 167 && worldTime < 2000){
-        	mixStrength = (((worldTime - 167) * 0.65f) / 1833); // Late morning
-    	}
-    	if(worldTime >= 23961 && worldTime < 24000){
-        	mixStrength = ((worldTime - 23961) * 0.066f) / 39; // Early morning 1
-    	}
-    	if(worldTime >= 0 && worldTime < 167){
-       		mixStrength = ((worldTime * 0.284f) / 167); // Early morning 2
-    	}
-		if(rainStrength > 0){
-			sky = mix(sky, rsky, rainStrength);
-			fog = mix(fog, rfog, rainStrength);
-		}
+        mixStrength = 1.0; // Day
+    }
+    if(worldTime >= 12000 && worldTime < 12542){
+        mixStrength = (((12000 - worldTime) * 0.65f) / 542) + 1.0f; // Early evening
+    }
+    if(worldTime >= 12542 && worldTime < 12786){
+        mixStrength = (((12542 - worldTime) * 0.35f) / 244) + 0.35f; // Late evening
+    }
+    if(worldTime >= 167 && worldTime < 2000){
+        mixStrength = (((worldTime - 167) * 0.65f) / 1833); // Late morning
+    }
+    if(worldTime >= 23961 && worldTime < 24000){
+        mixStrength = ((worldTime - 23961) * 0.066f) / 39; // Early morning 1
+    }
+    if(worldTime >= 0 && worldTime < 167){
+       	mixStrength = ((worldTime * 0.284f) / 167); // Early morning 2
+    }
+	if(rainStrength > 0){
+		sky = mix(sky, rsky, rainStrength);
+		fog = mix(fog, rfog, rainStrength);
+	}
 	mixStrength = clamp(mixStrength, 0.1, 1.0);
 	mixStrength = 1.0 - mixStrength;
+	if(worldTime < 2000){
+		mixStrength -= 0.4;
+	}
 	vec3 color = mix(mix(sky, skyColor, mixStrength), mix(fog, fogColor, mixStrength), fogify(max(upDot, 0.0), 0.25));
 	return color;
 }

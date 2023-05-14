@@ -37,7 +37,7 @@ const int colortex2Format = RGB16;
 */
 
 const float sunPathRotation = -20.0f;
-const int shadowMapResolution = 2048;   // Shadowmap resolution [512 1024 2048]
+const int shadowMapResolution = 2048;   // Shadowmap resolution [512 1024 2048 4096]
 const float shadowDistance = 80;   // Shadow draw distance [60 80 100 120 140 160]
 const int noiseTextureResolution = 32; 
 const float eyeBrightnessHalflife = 0.1f;
