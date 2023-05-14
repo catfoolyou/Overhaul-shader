@@ -1,14 +1,10 @@
 #version 120
 
-#define Bloom
-#define BloomRange 1.0 //[0.5 1.0 2.0 3.0 4.0]
-
 #define WavingWater
 #define WavingWaterStrength 0.04 //[0.02 0.04 0.06 0.08 1.0]
 #define WavingWaterSize 1.2 //[0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0]
 #define WavingWaterSpeed 1.2 //[0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0]
 #define NotOverfarfix_Reflect
-#define ReflectSky
 #define ReflectionQuality 1.0 //[0.04 0.08 0.1 0.2 0.3 0.4 0.5 0.6 0.8 1.0]
 #define ReflectionDistance 160 //[20 30 40 50 60 80 120 160 200 400 800 1600 3200]
 #define ReflectionCoefficient 1.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
@@ -139,9 +135,7 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
         }
     }
     
-    #ifdef ReflectSky
     hitColor = drawSkyFakeReflect(direction_) + drawSkyFakeSun(direction_);
-    #endif
     return hitColor.rgb;
 }
 
@@ -230,12 +224,5 @@ void main(){
 
 	
     gl_FragData[0] = vec4(color, 1.0);
-    /*
-    #ifdef Bloom
-    vec3 bloom = getBloomSource(color);
-    gl_FragData[2] = vec4(bloom, BloomRange*0.05);
-    #else
-    gl_FragData[2] = vec4(0);
-    #endif
-    */
+
 }

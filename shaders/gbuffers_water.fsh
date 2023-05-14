@@ -1,6 +1,5 @@
 #version 120
 
-#define NotDefaultWaterTexture
 uniform sampler2D texture;
 uniform sampler2D lightmap;
 

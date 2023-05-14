@@ -37,8 +37,8 @@ const int colortex2Format = RGB16;
 */
 
 const float sunPathRotation = -20.0f;
-const int shadowMapResolution = 2048;
-const float shadowDistance = 80;
+const int shadowMapResolution = 2048;   // Shadowmap resolution [512 1024 2048]
+const float shadowDistance = 80;   // Shadow draw distance [60 80 100 120 140 160]
 const int noiseTextureResolution = 32; 
 const float eyeBrightnessHalflife = 0.1f;
 const float shadowDistanceRenderMul = 1.0f;
@@ -135,7 +135,7 @@ void main(){
         shadowStrength = ((worldTime * 0.284f) / 167) + 0.066f; // Early morning 2
     }
     if(rainStrength > 0){
-        shadowStrength = min(mix(1, 0, rainStrength), shadowStrength); // Rain
+        shadowStrength = min(mix(1, 0.05, rainStrength), shadowStrength); // Rain
     }
     #define Normal normalize(texture2D(colortex1, TexCoords).rgb * 2.0f - 1.0f)
     float NdotL = max(dot(Normal * shadowStrength, normalize(sunPosition)), 0.0f);
