@@ -25,8 +25,6 @@ uniform mat4 gbufferProjectionInverse;
 uniform vec3 cameraPosition;
 uniform vec3 sunPosition;
 uniform vec3 moonPosition;
-uniform vec3 fogColor;
-uniform vec3 skyColor;
 uniform int worldTime;
 
 varying float isNight;
@@ -72,32 +70,13 @@ vec3 drawSkyFakeReflect(vec3 positionInViewCoord) {
 
     // The fog and the sun mix colors.
     float sunMixFactor = clamp(1.0 - disToSun, 0, 1) * (1.0-isNight);
-    vec3 finalColor = mix(mix(mySkyColor, skyColor, 0.5), mix(mySunColor, fogColor, 0.5), pow(sunMixFactor, 2));
+    vec3 finalColor = mix(mySkyColor, mySunColor, pow(sunMixFactor, 2));
 
     // The fog and the moon blend.
     float moonMixFactor = clamp(1.0 - disToMoon, 0, 1) * isNight;
     finalColor = mix(finalColor, mySunColor, pow(moonMixFactor, 2));
 
-    return mix(finalColor, skyColor, 0.1);
-}
-
-vec3 drawSkyFakeSun(vec3 positionInViewCoord) {
-    // The distance from a point in the eye coordinate system to the sun.
-    float disToSun = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(sunPosition));     // Sun
-    float disToMoon = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(moonPosition));    // Moon
-
-    // Draw a round sun
-    vec3 drawSun = vec3(0);
-    if(disToSun<0.005) {
-        drawSun = mySunColor * 2 * (1.0-isNight);
-    }
-    // Draw a round moon
-    vec3 drawMoon = vec3(0);
-    if(disToMoon<0.005) {
-        drawMoon = mySunColor * 2 * isNight;
-    }
-
-    return drawSun + drawMoon;   
+    return finalColor;
 }
 
 vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
@@ -116,18 +95,17 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
         }
         float sampleDepth = texture2DLod(depthtex0, uv, 0.0).x;
         sampleDepth = linearizeDepth(sampleDepth);
-		sampleDepth -= 10;
         float testDepth = getLinearDepthOfViewCoord(testPoint);
         
-        if((sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) || i == step - 1.0)
+        if((sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) || i == step)
         {
             hitColor = texture2DLod(colortex0, uv, 0.0).rgb;
-            return hitColor;
+            return hitColor.rgb;
         }
     }
     
-    hitColor = mix(hitColor, drawSkyFakeReflect(direction) + drawSkyFakeSun(direction), 0.5);
-    return hitColor;
+    hitColor = drawSkyFakeReflect(direction);
+    return hitColor.rgb;
 }
 
 float getWave(vec4 positionInWorldCoord) {
@@ -205,8 +183,10 @@ void main(){
     vec4 positionInViewCoord0 = vec4(positionInClipCoord0.xyz/positionInClipCoord0.w, 1.0);
     vec4 positionInWorldCoord0 = gbufferModelViewInverse * positionInViewCoord0;
 
+
     color = waterEffect(color, texcoord.st, positionInViewCoord0.xyz, positionInWorldCoord0, attrs);
 
+	
     gl_FragData[0] = vec4(color, 1.0);
 
 }
