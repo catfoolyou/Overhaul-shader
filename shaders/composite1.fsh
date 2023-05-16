@@ -126,7 +126,7 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
         }
     }
     
-    hitColor = mix(hitColor, drawSkyFakeReflect(direction) + drawSkyFakeSun(direction), 0.5);
+    hitColor = mix(hitColor, drawSkyFakeReflect(direction) + drawSkyFakeSun(direction), 0.1);
     return hitColor;
 }
 

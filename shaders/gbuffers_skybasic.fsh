@@ -8,7 +8,7 @@ uniform vec3 fogColor;
 uniform vec3 skyColor;
 uniform ivec2 eyeBrightness;
 uniform int worldTime;
-uniform float rainStrength; 
+uniform float rainStrength;
 
 vec3 sunColorArr[24] = vec3[24](
     vec3(2, 2, 1),      // 0-1000
@@ -118,6 +118,6 @@ void main() {
 		color = calcSkyColor(normalize(pos.xyz));
 	}
 
-/* DRAWBUFFERS:0 */
+	/* DRAWBUFFERS:0 */
 	gl_FragData[0] = vec4(color, 1.0); //gcolor
 }
