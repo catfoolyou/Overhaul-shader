@@ -19,6 +19,3 @@ More effects are planned to be included in future updates.
 # Screenshots
 
 ![screenshot](./1.png)
-![screenshot](./2.png)
-![screenshot](./3.png)
-![screenshot](./4.png)
