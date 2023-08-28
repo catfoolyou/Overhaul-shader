@@ -2,31 +2,42 @@
 
 uniform sampler2D texture;
 uniform sampler2D lightmap;
+uniform sampler2D depthtex0;
+uniform sampler2D colortex2;
+uniform sampler2D shadowtex0;
+uniform sampler2D shadowtex1;
+uniform sampler2D shadowcolor0;
+uniform sampler2D noisetex;
 
+uniform ivec2 eyeBrightnessSmooth;
 uniform int worldTime;
-uniform vec3 fogColor;
-uniform vec3 skyColor;
-uniform ivec2 eyeBrightness;
 
 varying float id;
+const int shadowMapResolution = 2048;   // Shadowmap resolution [512 1024 2048 4096]
 
-varying vec3 normal;    // Normal vector in eye coordinate system
-
+varying vec3 normal;  
 varying vec4 texcoord;
 varying vec4 color;
 varying vec4 lightMapCoord;
+varying vec2 TexCoords;
+
+uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferModelViewInverse;
+uniform mat4 shadowModelView;
+uniform mat4 shadowProjection;
+
+varying float isNight;
 
 void main() {
-    vec4 light = texture2D(lightmap, lightMapCoord.st); // Illumination
-    vec3 norm = normalize(normal);
-    norm = norm * 0.5 + 0.5;
-    vec3 sky = vec3(0.104, 0.26, 0.507);
-    if(id!=10119) {
-        gl_FragData[0] = color * texture2D(texture, texcoord.st) * light;   // If it is not a water surface, the texture is drawn normally
-        gl_FragData[3] = vec4(norm, 1.0);   // Normal
-    }
-    else {  
-        gl_FragData[0] = vec4(mix(vec3(0.02, 0.18, 0.26), sky, 0.5), 0.4) * light;   // Primary Color
-        gl_FragData[3] = vec4(norm, 1.0);   // Normal
-    }
+	float Depth = texture2D(depthtex0, TexCoords).r;
+    vec3 normal2 = normalize(normal) * 0.5 + 0.5;
+	vec4 Albedo = texture2D(texture, TexCoords) * color;
+
+	float Light = (eyeBrightnessSmooth.y / 1000.0) + (1.0 - isNight);
+
+	vec4 col = vec4((color).rgb, 0.4) * texture2D(texture, texcoord.st) * Light;
+
+    gl_FragData[0] = col;
+    gl_FragData[3] = vec4(normal2, 1.0);   // Normal
+    
 }

@@ -14,6 +14,7 @@ uniform sampler2D noisetex;
 uniform float near;
 uniform float far;
 uniform sampler2D colortex3;
+uniform sampler2D colortex6;
 uniform sampler2D depthtex0;
 uniform sampler2D colortex0;
 
@@ -72,11 +73,11 @@ vec3 drawSky(vec3 positionInViewCoord) {
 
     // The fog and the sun mix colors.
     float sunMixFactor = clamp(1.0 - disToSun, 0, 1) * (1.0-isNight);
-    vec3 finalColor = mix(mySkyColor, mySunColor, pow(sunMixFactor, 4));
+    vec3 finalColor = mix(mySkyColor, mySunColor / 3.0, pow(sunMixFactor, 4));
 
     // The fog and the moon blend.
     float moonMixFactor = clamp(1.0 - disToMoon, 0, 1) * isNight;
-    finalColor = mix(finalColor, mySunColor, pow(moonMixFactor, 4));
+    finalColor = mix(finalColor, mySunColor / 20.0, pow(moonMixFactor, 4));
 
     return finalColor;
 }
@@ -154,10 +155,9 @@ vec3 waterEffect(vec3 color, vec2 uv, vec3 viewPos, vec4 positionInWorldCoord, v
     		normal = normalize(normal);
     	}
         #endif
-        vec3 viewPos_ = normalize(viewPos.xyz);
-        float angle = abs(dot(viewPos_, normal));
+        float angle = abs(dot(normalize(viewPos.xyz), normal));
         
-        vec3 viewRefRay = reflect(viewPos_, normal);
+        vec3 viewRefRay = reflect(normalize(viewPos.xyz), normal);
         vec3 reflectColor = waterRayTarcing(viewPos, viewRefRay, color);
         
         reflectColor = mix(reflectColor, color, angle);
@@ -168,12 +168,11 @@ vec3 waterEffect(vec3 color, vec2 uv, vec3 viewPos, vec4 positionInWorldCoord, v
 }
 
 vec3 getBloomSource(vec3 color) {
-	float brightness = color.r*0.3 + color.g*0.6 + color.b*0.1;
-	if(brightness < 0.6)
-	{
-		return vec3(0);
-	}
-	return color;
+    float brightness = color.r * 0.3 + color.g * 0.6 + color.b * 0.1;
+    if (brightness < 0.7) {
+        return vec3(0);
+    }
+    return color;
 }
 
 void main(){
@@ -189,6 +188,10 @@ void main(){
 
     color = waterEffect(color, texcoord.st, positionInViewCoord0.xyz, positionInWorldCoord0, attrs);
 
+	float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+	/* DRAWBUFFERS:06 */
     gl_FragData[0] = vec4(color, 1.0);
+	if(brightness > 0.6)
+        gl_FragData[1] = vec4(color, 1.0);
 
 }

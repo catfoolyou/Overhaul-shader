@@ -3,10 +3,18 @@
 uniform sampler2D texture;
 uniform sampler2D lightmap;
 uniform sampler2D depthtex0;
+uniform sampler2D colortex2;
+uniform sampler2D shadowtex0;
+uniform sampler2D shadowtex1;
+uniform sampler2D shadowcolor0;
+uniform sampler2D noisetex;
 
+uniform ivec2 eyeBrightnessSmooth;
 uniform int worldTime;
+uniform vec3 skyColor;
 
 varying float id;
+const int shadowMapResolution = 2048;   // Shadowmap resolution [512 1024 2048 4096]
 
 varying vec3 normal;  
 varying vec4 texcoord;
@@ -14,13 +22,21 @@ varying vec4 color;
 varying vec4 lightMapCoord;
 varying vec2 TexCoords;
 
-void main() {
-    vec4 light = texture2D(lightmap, lightMapCoord.st); 
-    vec3 normal2 = normalize(normal) * 0.5 + 0.5;
+uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferModelViewInverse;
+uniform mat4 shadowModelView;
+uniform mat4 shadowProjection;
 
-    //vec3 sky = vec3(0.104, 0.26, 0.507);
-	vec4 col = vec4((color).rgb, 1.0) * texture2D(texture, texcoord.st) * light;
-	//vec4 col2 = vec4((color).rgb, 0.0) * texture2D(texture, texcoord.st) * light;
+varying float isNight;
+
+void main() {
+	float Depth = texture2D(depthtex0, TexCoords).r;
+    vec3 normal2 = normalize(normal) * 0.5 + 0.5;
+	vec4 Albedo = texture2D(texture, TexCoords) * color;
+
+	float Light = (eyeBrightnessSmooth.y / 10000.0) + (1.0 - isNight);
+
+	vec4 col = vec4(mix(color.rgb, skyColor - 2.0, 1.0-clamp(Light, 0.0, 1.0)), 0.4) * texture2D(texture, texcoord.st);
 
     gl_FragData[0] = col;
     gl_FragData[3] = vec4(normal2, 1.0);   // Normal

@@ -10,7 +10,6 @@ uniform mat4 gbufferModelViewInverse;
 uniform vec3 cameraPosition;
 
 uniform int worldTime;
-uniform float frameTimeCounter;
 
 varying float id;
 
@@ -19,33 +18,37 @@ varying vec3 normal;
 varying vec4 texcoord;
 varying vec4 lightMapCoord;
 varying vec4 color;
+varying vec2 TexCoords;
 
-vec3 wave_move(vec3 pos) {
-  float timer = (frameTimeCounter) * 3.141592;
-  pos = mod(pos, 3.141592);
-  vec2 wave_x = vec2(timer * 0.5, timer) + pos.xy;
-  vec2 wave_z = vec2(timer, timer * 1.5) + pos.xy;
-  vec2 wave_y = vec2(timer * 0.5, timer * 0.25) - pos.zx;
-
-  wave_x = sin(wave_x + wave_y);
-  wave_z = cos(wave_z + wave_y);
-  return vec3(wave_x.x + wave_x.y, 0.0, wave_z.x + wave_z.y);
-}
+varying float isNight;
 
 void main() {
-    gl_Position = ftransform();
-    vec4 positionInViewCoord = gl_ModelViewMatrix * gl_Vertex;
-    vec4 position = gbufferModelViewInverse * gl_ModelViewMatrix * gl_Vertex;
-    
-    gl_Position = gbufferProjection * positionInViewCoord;
-	
-    color = gl_Color;
-    id = mc_Entity.x;
-    if (mc_Entity.x == 10119){
-        position.y += wave_move(position.xyz).z / 30;
-        gl_Position = gl_ProjectionMatrix * gbufferModelView * position;
+	isNight = 0;  // daytime
+    if(12000<worldTime && worldTime<13000) {
+        isNight = 1.0 - (13000-worldTime) / 1000.0; // evening
     }
+    else if(13000<=worldTime && worldTime<=23000) {
+        isNight = 1.0;    // Night
+    }
+    else if(23000<worldTime) {
+        isNight = (24000-worldTime) / 1000.0;   // Dawn
+    }
+
+    vec4 positionInViewCoord = gl_ModelViewMatrix * gl_Vertex;
+    TexCoords = gl_MultiTexCoord0.st;
+    gl_Position = gbufferProjection * positionInViewCoord;
+
+    vec3 sky = vec3(0.104, 0.26, 0.507);
+    id = mc_Entity.x;
+
     normal = normalize(gl_NormalMatrix * gl_Normal);
     lightMapCoord = gl_TextureMatrix[1] * gl_MultiTexCoord1;
     texcoord = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+
+    if(id!=10119) {
+        color = gl_Color;   // Normal
+    }
+     else {   
+        color = vec4(mix(vec3(0.02, 0.02, 0.027), sky, 0.5), 0.4);
+    }
 }
