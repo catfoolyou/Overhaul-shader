@@ -34,9 +34,9 @@ void main() {
     vec3 normal2 = normalize(normal) * 0.5 + 0.5;
 	vec4 Albedo = texture2D(texture, TexCoords) * color;
 
-	float Light = (eyeBrightnessSmooth.y / 10000.0) + (1.0 - isNight);
+	float Light = (eyeBrightnessSmooth.y / 10000.0) + (isNight) / 2.0;
 
-	vec4 col = vec4(mix(color.rgb, skyColor - 2.0, 1.0-clamp(Light, 0.0, 1.0)), 0.4) * texture2D(texture, texcoord.st);
+	vec4 col = vec4(color.rgb, 0.4) * (texture2D(texture, texcoord.st) * vec4(skyColor, 1.0));
 
     gl_FragData[0] = col;
     gl_FragData[3] = vec4(normal2, 1.0);   // Normal

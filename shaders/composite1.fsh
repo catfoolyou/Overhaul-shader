@@ -30,6 +30,7 @@ uniform vec3 fogColor;
 uniform vec3 skyColor;
 uniform int worldTime;
 uniform float frameTimeCounter;
+uniform ivec2 eyeBrightnessSmooth;
 
 varying float isNight;
 varying vec3 mySkyColor;
@@ -188,10 +189,16 @@ void main(){
 
     color = waterEffect(color, texcoord.st, positionInViewCoord0.xyz, positionInWorldCoord0, attrs);
 
+	float Depth = texture2D(depthtex0, texcoord.st).r;
+	float sceneAvg = (color.r + color.g + color.b) / 3.0;
+
 	float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+	float Light = (eyeBrightnessSmooth.y / 400.0) + (isNight);
+	float bright = mix(0.3, 0.05, Light);
+
 	/* DRAWBUFFERS:06 */
     gl_FragData[0] = vec4(color, 1.0);
-	if(brightness > 0.6)
+	if(brightness > sceneAvg+bright && Depth != 1.0)
         gl_FragData[1] = vec4(color, 1.0);
 
 }
