@@ -68,15 +68,12 @@ float getLinearDepthOfViewCoord(vec3 viewCoord) {
 }
 
 vec3 drawSky(vec3 positionInViewCoord) {
-    // The distance from a point in the eye coordinate system to the sun.
-    float disToSun = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(sunPosition));     // Sun
-    float disToMoon = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(moonPosition));    // Moon
+    float disToSun = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(sunPosition));
+    float disToMoon = 1.0 - dot(normalize(positionInViewCoord.xyz), normalize(moonPosition));
 
-    // The fog and the sun mix colors.
     float sunMixFactor = clamp(1.0 - disToSun, 0, 1) * (1.0-isNight);
     vec3 finalColor = mix(mySkyColor, mySunColor / 3.0, pow(sunMixFactor, 4));
 
-    // The fog and the moon blend.
     float moonMixFactor = clamp(1.0 - disToMoon, 0, 1) * isNight;
     finalColor = mix(finalColor, mySunColor / 20.0, pow(moonMixFactor, 4));
 
@@ -94,14 +91,15 @@ vec3 waterRayTarcing(vec3 startPoint, vec3 direction, vec3 color) {
     {
         testPoint += direction * (direction.y + float(i) * 0.05);
         vec2 uv = getScreenCoordByViewCoord(testPoint);
-        if(uv.x<0 || uv.x>1 ||
-          uv.y<0 || uv.y>1) {
-            break;
-        }
         float sampleDepth = texture2DLod(depthtex0, uv, 0.0).x;
         sampleDepth = linearizeDepth(sampleDepth);
 		sampleDepth -= 10;
         float testDepth = getLinearDepthOfViewCoord(testPoint);
+
+		if(uv.x<0 || uv.x>1 ||
+          uv.y<0 || uv.y>1) {
+			break;
+        }
         
         if((sampleDepth < testDepth && testDepth - sampleDepth < (1.0 + testDepth * 200.0 + float(i))/2048.0 ) || i == step - 1.0)
         {

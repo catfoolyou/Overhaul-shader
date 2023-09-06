@@ -70,7 +70,29 @@ float fogify(float x, float w) {
 	return w / (x * x + w);
 }
 
-#define WATER_COLOR vec3(0.018, 0.12 , 0.18)
+/*float rand(vec2 n) { 
+	return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+
+float noise(vec2 p){
+	vec2 ip = floor(p);
+	vec2 u = fract(p);
+	u = u*u*(3.0-2.0*u);
+	
+	float res = mix(
+		mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
+		mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),u.y);
+	return res*res;
+}
+
+// Function to generate cloud coverage
+float generateCloudCoverage(vec2 p) {
+    float cloudDensity = 0.5;  // Adjust cloud density as needed
+    float cloudScale = 10.0;   // Adjust cloud scale as needed
+
+    float cloudValue = noise(p * cloudScale);
+    return cloudDensity * cloudValue;
+}*/
 
 vec3 calcSkyColor(vec3 pos) {
 	float upDot = dot(pos, gbufferModelView[1].xyz);
@@ -78,6 +100,9 @@ vec3 calcSkyColor(vec3 pos) {
 	float isNight;
 	vec3 sky;
 	vec3 fog;
+
+	//vec2 cloudPosition = pos.xz;
+    //float cloudCoverage = generateCloudCoverage(cloudPosition);
 
 	int hour = worldTime/1000;
     int next = (hour+1<24)?(hour+1):(0);
@@ -104,8 +129,11 @@ vec3 calcSkyColor(vec3 pos) {
     fog = mix(fog, rainColor, rainStrength);
 
 	fog = mix(fog, vec3(0.76, 0.85, 0.94), 0.7);
+	//vec3 cloudColor = vec3(1.0);
+	//sky = mix(sky, cloudColor, cloudCoverage);
 	
 	vec3 color = mix(mix(sky, skyColor, isNight), mix(fog, fogColor, isNight), fogify(max(upDot, 0.0), 0.25));
+
 	return color;
 }
 
